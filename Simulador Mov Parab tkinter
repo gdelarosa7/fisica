@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Apr 23 14:56:56 2022
+
+@author: dr.guillermo
+"""
+
+import tkinter as tk
+from tkinter import *
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+def tiro():
+    x0= 0
+    y0= 0
+    vi= 26  #velocidad inicial
+    ang= 40 #angulo del tiro en grados
+    g= 9.81 # valor de la gravedad
+    h= 0    # altura
+
+    # lee datos
+    h= float(txt1.get())
+    ang=float(txt2.get())
+    vi=float(txt3.get())
+   
+  
+    #convertimos el angulo a radianes
+    #numpy trabaja en radianes
+    ang_r= ang*np.pi/180
+    #calculamos la componente de la velocidad en x 
+    vxi= vi*np.cos(ang_r)
+    lb6= Label(left_frame,text="vxi= "+str(format(vxi,'0.2f')), font=("Verdana",14),bg="yellow")
+    lb6.place(x=0,y=160)
+    
+    #calculamos la componente de la velocidad en y 
+    v0y= vi*np.sin(ang_r)
+    lb7= Label(left_frame,text="vyi= "+str(format(v0y,'0.2f')), font=("Verdana",14),bg="yellow")
+    lb7.place(x=0,y=180)
+    
+    # tiempo en altura máx y tiempo de vuelo
+    thmax=v0y/g
+    ttotal= thmax*2
+    lb8= Label(left_frame,text="Tiempo altura Máx= "+str(format(thmax,'0.2f')), font=("Verdana",14), bg="yellow")
+    lb8.place(x=0,y=220)
+    lb9= Label(left_frame,text="Tiempo de Vuelo= "+str(format(ttotal,'0.2f')), font=("Verdana",14), bg="yellow")
+    lb9.place(x=0,y=240)
+    
+    #altura máx 
+    ymax = y0 + (v0y*thmax)-(g*thmax**2)/2
+    lb10= Label(left_frame,text="Altura Máx= "+str(format(ymax,'0.2f')), font=("Verdana",14), bg="yellow")
+    lb10.place(x=0,y=280)
+    
+    #alcance maximo del tiro
+    xmax = x0+ (vxi*ttotal)
+    lb11= Label(left_frame,text="Alcance Máx= "+str(format(xmax,'0.2f')), font=("Verdana",14), bg="yellow")
+    lb11.place(x=0,y=300)
+    
+    #secuencia de Valores de tiempo- eje x
+    # se ajusta el tamaño de acuerdo a los datos de entrada 
+    t=np.linspace(0,ttotal)
+    
+    # Ec. trayectoria mov en eje y 
+    y= h+ (v0y *t) - ((g*t**2)/2)
+      
+    ax.clear()    # Limpia ejes
+    ax.plot(t,y)  # Gráfica t* y
+    ax.grid(True) # pone divisiones 
+    ax.set_xlabel('$Tiempo(s)$'),ax.set_ylabel('y(x)')
+    ax.set_title('Tiro Parabólico')
+    line.draw()
+    
+#--- Raiz ---
+root = tk.Tk()
+root.geometry('1200x650')
+root.title("Simulador Movimiento Parabólico")
+#------------
+
+#-- Frames ---
+left_frame = tk.Frame(root)
+left_frame.place(relx=0.03, rely=0.05, relwidth=0.25, relheight=0.9)
+
+right_frame = tk.Frame(root, bg='#C0C0C0', bd=1.5)
+right_frame.place(relx=0.3, rely=0.05, relwidth=0.65, relheight=0.9)
+#---------------
+
+#--- Etiquetas y botones ---
+RH = 0.19
+
+lb1= Label(left_frame,text="Altura ini=", font=("Verdana",14))
+lb1.place(x= 0, y=5)
+txt1=Entry(left_frame)
+txt1.place(x=100,y=5, width=80, height=30 )
+lb2= Label(left_frame,text="Ángulo=", font=("Verdana",14))
+lb2.place(x=0,y=40)
+txt2=Entry(left_frame)
+txt2.place(x=100,y=40, width=80, height=30)
+lb3= Label(left_frame,text="Vel ini=", font=("Verdana",14))
+lb3.place(x=0,y=80)
+txt3=Entry(left_frame)
+txt3.place(x=100,y=80, width=80, height=30)
+
+lb4= Label(left_frame,text="Resultados", font=("Verdana",14))
+lb4.place(x=0,y=120)
+lb5= Label(left_frame,text="Componentes de la velocidad", font=("Verdana",14))
+lb5.place(x=0,y=140)
+
+lb6= Label(left_frame,text="vxi= ", font=("Verdana",14))
+lb6.place(x=0,y=160)
+lb7= Label(left_frame,text="vyi= ", font=("Verdana",14))
+lb7.place(x=0,y=180)
+
+lb8= Label(left_frame,text="Tiempo altura Máx=", font=("Verdana",14))
+lb8.place(x=0,y=220)
+lb9= Label(left_frame,text="Tiempo de Vuelo=", font=("Verdana",14))
+lb9.place(x=0,y=240)
+
+lb10= Label(left_frame,text="Alcance Máx", font=("Verdana",14))
+lb10.place(x=0,y=280)
+lb11= Label(left_frame,text="Alcance Máx", font=("Verdana",14))
+lb11.place(x=0,y=300)
+
+B4 = tk.Button(left_frame,text="Graficar",command = tiro)
+B4.place(rely= 4*(0.1 + RH*0.54) ,relheight=RH, relwidth=1)
+#------------
+
+#--- Agregar figura ---
+figure = plt.Figure(figsize=(5,6), dpi=100)
+ax = figure.add_subplot(111)
+ax.grid(True),ax.set_xlabel('Tiempo'),ax.set_ylabel('y(x)')
+line = FigureCanvasTkAgg(figure, right_frame)
+line.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH,expand=1)
+#----------------------
+
+root.mainloop()
+
