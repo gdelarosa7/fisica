@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug 13 13:08:23 2021
+
+@author: dr.guillermo
+
+Simulador Tiro Parabólico
+
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+
+# Parámetros de entrada
+x0= 0
+y0= 0
+
+vi= 26    #velocidad inicial
+ang_g= 40 # angulo del tiro en grados
+
+#convertimos el angulo a radianes
+#numpy trabaja en radianes
+ang= ang_g*np.pi/180
+g= 9.81   # valor de la gravedad
+h= 0      # altura
+
+# componentes
+vxi= vi*np.cos(ang)
+v0y= vi*np.sin(ang)
+#print('Componente Vxi= ' + str(format(vxi,'0.2f')))
+#print('Componente Vyi= ' + str(format(v0y,'0.2f'))
+
+# en consola se debe habilitar
+# %matplolib auto    modo ventana
+#            inline  modo iterativo
+
+# tiempo de vuelo
+thmax=v0y/g
+ttotal= thmax*2
+#print('Tiempo altura Máx = '+ str(format(thmax,'0.2f')))
+#print('Tiempo de vuelo = '+ str(format(ttotal,'0.2f')))
+
+#altura máx 
+ymax = y0 + (v0y*thmax)-(g*thmax**2)/2
+#print('Altura Máx= '+ str(format(ymax,'0.2f'))
+
+#alcance maximo del tiro
+xmax = x0+ (vxi*ttotal)  
+#secuencia de Valores de tiempo para el eje x
+t=np.linspace(0, ttotal)
+
+# Ec. mov en eje y 
+y= h+ (v0y *t) - ((g*t**2)/2)
+#y= h+ v0y * np.sin(ang)*t - ((g*t**2)/2)
+#y= v0y * np.sin(np.rad2deg(ang))*t - ((g*t**2)/2)
+
+# inicializamos figure
+fig= plt.figure()
+
+#tomamos los ejes
+ax= fig.gca()
+
+# Resultados
+print('Componente Vxi= ' + str(format(vxi,'0.2f')))
+print('Componente Vyi= ' + str(format(v0y,'0.2f')))
+
+print('Tiempo altura Máx = '+ str(format(thmax,'0.2f')))
+print('Tiempo de vuelo = '+ str(format(ttotal,'0.2f')))
+
+print('Altura Máx= '+ str(format(ymax,'0.2f')))
+print('Alcance Máx= '+ str(format(xmax,'0.2f')))
+
+#---------
+#actualizar la fig
+#con el iterador i
+def actualizar(i):
+    ax.clear() # borrar ejex
+    ax.plot(t[:i],y[:i]) #gráfica punto por punto
+    plt.title(str(t[i])) # titulo 
+    plt.xlabel("Tiempo")
+    plt.ylabel("y(t)")
+    plt.xlim(min(t),max(t))   # limites en x 
+    plt.ylim(min(y),max(y))   #limites en y 
+    
+#animacion
+#Hace una animación llamando repetidamente a una función 
+ani=animation.FuncAnimation(fig,           # figura
+                            actualizar,    # función que act en cada cuadro 
+                            range(len(t)), # num de frames
+                            interval=10,   # Retraso entre fotogramas en milise
+                            repeat=True)  # repetir la animación 
+plt.show() # muestra la gráfica
+
